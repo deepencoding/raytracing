@@ -5,15 +5,16 @@
 #include "ray.h"
 
 double hit_sphere(const point3& center, double radius, const ray& r) {
-	vec3 origin_to_center = center - r.origin();
+	vec3 camera_to_sphere = center - r.origin();
+
 	// double a = dot(r.direction(), r.direction());
 	double a = r.direction().length_squared();
 
 	// double b = -2.0 * dot(r.direction(), origin_to_center);
-	double h = dot(r.direction(), origin_to_center);
+	double h = dot(r.direction(), camera_to_sphere);
 
 	// double c = dot(origin_to_center, origin_to_center) - radius*radius;
-	double c = origin_to_center.length_squared() - radius*radius;
+	double c = camera_to_sphere.length_squared() - radius*radius;
 
 	double discriminant = h*h - a*c;
 
@@ -29,8 +30,8 @@ color ray_color(const ray& r) {
 	// Sphere Intersection
 	double t = hit_sphere(point3(0,0,-1), 0.5, r);
 	if (t > 0.0) {
-		vec3 N = unit_vector(r.at(t) - point3(0,0,-1));
-		return 0.5*color(N.x()+1, N.y()+1, N.z()+1);
+		vec3 N = unit_vector(r.at(t) - point3(0,0,-1)); // Components range from [-1, 1]
+		return 0.5*color(N.x()+1, N.y()+1, N.z()+1); // Components range from [0, 1]
 	}
 
 	// Lerp from White to Blue
