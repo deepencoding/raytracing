@@ -1,39 +1,21 @@
-#include <iostream>
+#include "utility.h"
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
-#include "vec3.h"
-#include "color.h"
-#include "ray.h"
-
-double hit_sphere(const point3& center, double radius, const ray& r) {
-	vec3 camera_to_sphere = center - r.origin();
-
-	// double a = dot(r.direction(), r.direction());
-	double a = r.direction().length_squared();
-
-	// double b = -2.0 * dot(r.direction(), origin_to_center);
-	double h = dot(r.direction(), camera_to_sphere);
-
-	// double c = dot(origin_to_center, origin_to_center) - radius*radius;
-	double c = camera_to_sphere.length_squared() - radius*radius;
-
-	double discriminant = h*h - a*c;
-
-	if (discriminant < 0) {
-		return -1.0;
-	} else {
-		// return (-b - std::sqrt(discriminant)) / (2.0*a);
-		return (h - std::sqrt(discriminant)) / a;
+color ray_color(const ray& r, const Hittable& world) {
+	hit_record rec;
+	if (world.hit(r, Interval(0.0, infinity), rec)) {
+		return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
 	}
-}
-
-color ray_color(const ray& r) {
+	/*
 	// Sphere Intersection
 	double t = hit_sphere(point3(0,0,-1), 0.5, r);
 	if (t > 0.0) {
 		vec3 N = unit_vector(r.at(t) - point3(0,0,-1)); // Components range from [-1, 1]
 		return 0.5*color(N.x()+1, N.y()+1, N.z()+1); // Components range from [0, 1]
 	}
-
+	*/
 	// Lerp from White to Blue
 	vec3 unit_dir = unit_vector(r.direction());
 	double a = 0.5 * (unit_dir.y() + 1.0);
@@ -45,6 +27,11 @@ int main() {
 	double aspect_ratio = 16.0 / 9.0;
 	int img_width = 400;
 	int img_height = std::max(1, int(img_width / aspect_ratio));
+
+	// World
+	Hittable_list world;
+	world.add(make_shared<Sphere>(point3(0,0,-1), 0.5));
+	world.add(make_shared<Sphere>(point3(0,-100.5,-1), 100));
 
 	// Camera
 	double focal_len = 1.0;
@@ -72,7 +59,7 @@ int main() {
 			vec3 ray_dir = pixel_center - camera_center;
 			ray r(camera_center, ray_dir);
 
-			color pixel = ray_color(r);
+			color pixel = ray_color(r, world);
 			write_color(std::cout, pixel);
 		}
 	}

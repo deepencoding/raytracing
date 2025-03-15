@@ -10,7 +10,7 @@ public:
 
 	Sphere(const point3& center, double radius): m_Center(center), m_Radius(std::fmax(0,radius)) {}
 
-	bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override {
+	bool hit(const ray& r, Interval ray_t, hit_record& rec) const override {
 		vec3 oc  = m_Center - r.origin();
 		double a = r.direction().length_squared();
 		double h = dot(oc, r.direction());
@@ -24,9 +24,9 @@ public:
 
 		// Nearest root that lies in acceptable range
 		double root = (h - sqrt_d) / a;
-		if (root <= t_min || root >= t_max) {
+		if (root <= ray_t.Min || root >= ray_t.Max) {
 			root = (h + sqrt_d) / a;
-			if (root <= t_min || root >= t_max)
+			if (root <= ray_t.Min || root >= ray_t.Max)
 				return false;
 		}
 
