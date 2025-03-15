@@ -10,7 +10,7 @@ public:
 
 	Sphere(const point3& center, double radius): m_Center(center), m_Radius(std::fmax(0,radius)) {}
 
-	bool hit(const ray& r, Interval ray_t, hit_record& rec) const override {
+	bool hit(const Ray& r, Interval ray_t, hit_record& rec) const override {
 		vec3 oc  = m_Center - r.origin();
 		double a = r.direction().length_squared();
 		double h = dot(oc, r.direction());

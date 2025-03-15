@@ -3,7 +3,7 @@
 #include "hittable_list.h"
 #include "sphere.h"
 
-color ray_color(const ray& r, const Hittable& world) {
+color ray_color(const Ray& r, const Hittable& world) {
 	hit_record rec;
 	if (world.hit(r, Interval(0.0, infinity), rec)) {
 		return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
@@ -57,7 +57,7 @@ int main() {
 		for (int col = 0; col < img_width; ++col) {
 			color pixel_center = pixel_upper_left + col * pixel_delta_x + row * pixel_delta_y;
 			vec3 ray_dir = pixel_center - camera_center;
-			ray r(camera_center, ray_dir);
+			Ray r(camera_center, ray_dir);
 
 			color pixel = ray_color(r, world);
 			write_color(std::cout, pixel);

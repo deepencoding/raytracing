@@ -2,10 +2,10 @@
 
 #include "vec3.h"
 
-class ray {
+class Ray {
 public:
-	ray() {}
-	ray(const vec3& _origin, const point3& _dir): m_Origin(_origin), m_Direction(_dir) {}
+	Ray() {}
+	Ray(const vec3& _origin, const point3& _dir): m_Origin(_origin), m_Direction(_dir) {}
 
 	const point3& origin() const { return m_Origin; }
 	const vec3& direction() const { return m_Direction; }
