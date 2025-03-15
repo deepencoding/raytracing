@@ -1,7 +1,9 @@
 #!/bin/bash
 
-cd src
-g++ -o ../build/debug/main main.cpp 
-cd ..
-build/debug/main > output/image.ppm
+mkdir -p build
+mkdir -p build/debug
+cmake -DCMAKE_BUILD_TYPE=Debug .
+cmake -B build/debug
+cmake --build build/debug
+build/debug/raytracing > output/image.ppm
 open output/image.ppm
