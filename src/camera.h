@@ -1,12 +1,14 @@
 #pragma once
 
 #include "hittable.h"
+#include "vec3.h"
 
 class Camera {
 public:
-	double m_AspectRatio     = 1.0;  // Ratio of image width over height
-	int    m_ImageWidth      = 100;  // Rendered image width in pixel count
-	int		 m_SamplesPerPixel = 10;   // Number of random ray samples per pixel
+	double m_AspectRatio     = 1.0; // Ratio of image width over height
+	int    m_ImageWidth      = 100; // Rendered image width in pixel count
+	int    m_SamplesPerPixel = 10;  // Number of random ray samples per pixel
+	int    m_MaxDepth	 = 10;  // Max num of ray bounces
 
 	void Render(const Hittable& world) {
 		Initialize();
@@ -21,7 +23,7 @@ public:
 				color pixel_color(0,0,0);
 				for (int sample = 0; sample < m_SamplesPerPixel; sample++) {
 					Ray r = get_ray(col, row);
-					pixel_color += RayColor(r, world);
+					pixel_color += RayColor(r, m_MaxDepth, world);
 				}
 
 				write_color(std::cout, m_PixelSamplesScale * pixel_color);
@@ -76,20 +78,17 @@ private:
 		return vec3(random_double() - 0.5, random_double() - 0.5, 0);
 	}
 
-	color RayColor(const Ray& r, const Hittable& world) {
+	color RayColor(const Ray& r, int Depth, const Hittable& world) {
+		if (Depth <= 0) 
+			return color(0, 0, 0);
+
 		hit_record rec;
-		if (world.hit(r, Interval(0.0, infinity), rec)) {
-			return 0.5 * color(rec.normal + color(1, 1, 1));
+
+		if (world.hit(r, Interval(0.001, infinity), rec)) {
+			vec3 direction = random_on_hemisphere(rec.normal);
+			return 0.5 * RayColor(Ray(rec.p, direction), Depth-1, world);
 		}
-		/*
-		// Sphere Intersection
-		double t = hit_sphere(point3(0,0,-1), 0.5, r);
-		if (t > 0.0) {
-			vec3 N = unit_vector(r.at(t) - point3(0,0,-1)); // Components range from [-1, 1]
-			return 0.5*color(N.x()+1, N.y()+1, N.z()+1); // Components range from [0, 1]
-		}
-		*/
-		// Lerp from White to Blue
+
 		vec3 unit_dir = unit_vector(r.direction());
 		double a = 0.5 * (unit_dir.y() + 1.0);
 		return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
