@@ -2,13 +2,17 @@
 
 #include "ray.h"
 #include "hittable.h"
+#include "utility.h"
+#include <memory>
 
 class Sphere: public Hittable {
 public:
 	point3 m_Center;
 	double m_Radius;
+	std::shared_ptr<Material> m_pMat;
 
-	Sphere(const point3& center, double radius): m_Center(center), m_Radius(std::fmax(0,radius)) {}
+	Sphere(const point3& center, double radius, shared_ptr<Material> p_mat)
+		: m_Center(center), m_Radius(std::fmax(0,radius)), m_pMat(p_mat) {}
 
 	bool hit(const Ray& r, Interval ray_t, hit_record& rec) const override {
 		vec3 oc  = m_Center - r.origin();
@@ -30,10 +34,11 @@ public:
 				return false;
 		}
 
-		rec.t = root;
-		rec.p = r.at(rec.t);
-		vec3 outward_normal = (rec.p - m_Center) / m_Radius;
+		rec.intersected_at = root;
+		rec.poi = r.at(rec.intersected_at);
+		vec3 outward_normal = (rec.poi - m_Center) / m_Radius;
 		rec.set_face_normal(r, outward_normal);
+		rec.p_mat = m_pMat;
 
 		return true;
 	}

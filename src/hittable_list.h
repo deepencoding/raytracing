@@ -22,7 +22,7 @@ public:
 		for (const auto& object : m_Objects) {
 			if (object->hit(r, Interval(ray_t.Min, closest_so_far), temp_rec)) {
 				hit_anything = true;
-				closest_so_far = temp_rec.t;
+				closest_so_far = temp_rec.intersected_at;
 				rec = temp_rec;
 			}
 		}

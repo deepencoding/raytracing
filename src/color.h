@@ -6,10 +6,19 @@
 
 using color = vec3;
 
+inline double linear_to_gamma(double linear_component) {
+	return linear_component > 0 ? std::sqrt(linear_component) : 0;
+}
+
 void write_color(std::ostream& out, const color& pixel) {
 	double R = pixel.x();
 	double G = pixel.y();
 	double B = pixel.z();
+
+	// Apply gamma correction
+	R = linear_to_gamma(R);
+	G = linear_to_gamma(G);
+	B = linear_to_gamma(B);
 
 	// Convert normalized values to [0, 255]
 	static const Interval intensity(0.000, 0.999);

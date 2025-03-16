@@ -2,6 +2,7 @@
 
 #include "hittable.h"
 #include "vec3.h"
+#include "material.h"
 
 class Camera {
 public:
@@ -85,8 +86,11 @@ private:
 		hit_record rec;
 
 		if (world.hit(r, Interval(0.001, infinity), rec)) {
-			vec3 direction = random_on_hemisphere(rec.normal);
-			return 0.5 * RayColor(Ray(rec.p, direction), Depth-1, world);
+			Ray scattered;
+			color attenuation;
+			if (rec.p_mat->scatter(r, rec, attenuation, scattered))
+				return attenuation * RayColor(scattered, Depth-1, world);
+			return color(0,0,0);
 		}
 
 		vec3 unit_dir = unit_vector(r.direction());

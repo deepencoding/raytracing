@@ -3,11 +3,14 @@
 #include "interval.h"
 #include "utility.h"
 
+class Material;
+
 struct hit_record {
-  point3 p;
+  point3 poi;
   vec3 normal;
-  double t;
+  double intersected_at;
   bool front_face;
+  std::shared_ptr<Material> p_mat;
 
   void set_face_normal(const Ray& r, const vec3 &outward_normal) {
     // Note: outward_normal is assumed to be normalized.
