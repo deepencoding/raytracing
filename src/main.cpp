@@ -12,6 +12,7 @@ int main() {
 	Camera cam;
 	cam.m_AspectRatio = 16.0 / 9.0;
 	cam.m_ImageWidth = 400;
+	cam.m_SamplesPerPixel = 100;
 	cam.Render(world);
 	return 0;
 }

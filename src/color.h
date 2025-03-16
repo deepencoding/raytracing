@@ -1,19 +1,21 @@
 #pragma once
 
+#include "interval.h"
 #include "utility.h"
 #include "vec3.h"
 
 using color = vec3;
 
 void write_color(std::ostream& out, const color& pixel) {
-	const double& R = pixel.x();
-	const double& G = pixel.y();
-	const double& B = pixel.z();
+	double R = pixel.x();
+	double G = pixel.y();
+	double B = pixel.z();
 
-	// Convert normalized values to [1, 255]
-	int rbyte = int(255.999 * R);
-	int gbyte = int(255.999 * G);
-	int bbyte = int(255.999 * B);
+	// Convert normalized values to [0, 255]
+	static const Interval intensity(0.000, 0.999);
+	int rbyte = int(256 * intensity.Clamp(R));
+	int gbyte = int(256 * intensity.Clamp(G));
+	int bbyte = int(256 * intensity.Clamp(B));
 
 	out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
 }

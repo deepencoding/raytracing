@@ -21,6 +21,12 @@ public:
 		return x > Min && x < Max;
 	}
 
+	double Clamp(double x) const {
+		if (x < Min) return Min;
+		if (x > Max) return Max;
+		return x;
+	}
+
 	static const Interval empty, universe;
 };
 

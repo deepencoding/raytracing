@@ -26,7 +26,7 @@ inline double rad_to_deg(double rad) {
 // Random Number Generation
 static std::random_device rd;
 static std::mt19937 rng(rd());
-std::uniform_real_distribution<double> dist(0.0, std::nextafter(1.0, 0.0));
+static std::uniform_real_distribution<double> dist(0.0, std::nextafter(1.0, 0.0));
 
 inline double random_double() {
     // Returns a random real in [0, 1).
