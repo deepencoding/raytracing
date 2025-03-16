@@ -46,19 +46,19 @@ private:
 		vec3 viewport_x = vec3(viewport_width, 0, 0);
 		vec3 viewport_y = vec3(0, -viewport_height, 0);
 
-		vec3 pixel_delta_x = viewport_x / m_ImageWidth;
-		vec3 pixel_delta_y = viewport_y / m_ImageHeight;
+		m_PixelDeltaU = viewport_x / m_ImageWidth;
+		m_PixelDeltaV = viewport_y / m_ImageHeight;
 
 		// Calculate the location of the upper left pixel.
 		auto viewport_upper_left =
 		    m_Center - vec3(0, 0, focal_len) - viewport_x/2 - viewport_y/2;
-		m_Pixel00Loc = viewport_upper_left + 0.5 * (pixel_delta_x + pixel_delta_y);
+		m_Pixel00Loc = viewport_upper_left + 0.5 * (m_PixelDeltaU + m_PixelDeltaV);
 	}
 
 	color RayColor(const Ray& r, const Hittable& world) {
 		hit_record rec;
 		if (world.hit(r, Interval(0.0, infinity), rec)) {
-			return 0.5 * color(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+			return 0.5 * color(rec.normal + color(1, 1, 1));
 		}
 		/*
 		// Sphere Intersection
