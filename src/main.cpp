@@ -8,8 +8,8 @@
 using std::make_shared;
 
 int main() {
-	// World
-	Hittable_list world;
+    // World
+    Hittable_list world;
 
     auto material_ground = make_shared<Lambertian>(color(0.8, 0.8, 0.0));
     auto material_center = make_shared<Lambertian>(color(0.1, 0.2, 0.5));
@@ -23,11 +23,26 @@ int main() {
     world.add(make_shared<Sphere>(point3(-1.0,    0.0, -1.0),   0.4, material_bubble));
     world.add(make_shared<Sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
 
-	Camera cam;
-	cam.m_AspectRatio = 16.0 / 9.0;
-	cam.m_ImageWidth = 400;
-	cam.m_SamplesPerPixel = 100;
-	cam.m_MaxDepth = 50;
-	cam.Render(world);
-	return 0;
+    /*
+    auto R = std::cos(pi/4);
+
+    auto material_left  = make_shared<Lambertian>(color(0,0,1));
+    auto material_right = make_shared<Lambertian>(color(1,0,0));
+
+    world.add(make_shared<Sphere>(point3(-R, 0, -1), R, material_left));
+    world.add(make_shared<Sphere>(point3( R, 0, -1), R, material_right));
+    */
+
+    Camera cam;
+    cam.m_AspectRatio = 16.0 / 9.0;
+    cam.m_ImageWidth = 400;
+    cam.m_SamplesPerPixel = 100;
+    cam.m_MaxDepth = 50;
+
+    cam.m_vFov     = 90;
+    cam.m_LookFrom = point3(-2,2,1);
+    cam.m_LookAt   = point3(0,0,-1);
+    cam.m_ViewUp   = vec3(0,1,0);
+    cam.Render(world);
+    return 0;
 }

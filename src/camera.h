@@ -10,6 +10,11 @@ public:
 	int    m_ImageWidth      = 100; // Rendered image width in pixel count
 	int    m_SamplesPerPixel = 10;  // Number of random ray samples per pixel
 	int    m_MaxDepth	 = 10;  // Max num of ray bounces
+	
+	double m_vFov     = 90;
+	point3 m_LookFrom = point3(0,0,0);   // Point camera is looking from
+	point3 m_LookAt   = point3(0,0,-1);  // Point camera is looking at
+	vec3   m_ViewUp   = vec3(0,1,0);
 
 	void Render(const Hittable& world) {
 		Initialize();
@@ -21,7 +26,7 @@ public:
 			for (; i < (50 * row / m_ImageHeight); ++i) std::clog << '#';
 			for (; i < 50; ++i) std::clog << '.' << std::flush;
 			for (int col = 0; col < m_ImageWidth; col++) {
-				color pixel_color(0,0,0);
+				color pixel_color = color(0,0,0);
 				for (int sample = 0; sample < m_SamplesPerPixel; sample++) {
 					Ray r = get_ray(col, row);
 					pixel_color += RayColor(r, m_MaxDepth, world);
@@ -40,29 +45,36 @@ private:
 	point3 m_Pixel00Loc;    // Location of pixel 0, 0
 	vec3   m_PixelDeltaU;  // Offset to pixel to the right
 	vec3   m_PixelDeltaV;  // Offset to pixel below
+	vec3   u, v, w;
 
 	void Initialize() {
 		m_ImageHeight = std::max(1, int(m_ImageWidth / m_AspectRatio));
 
 		m_PixelSamplesScale = 1.0 / m_SamplesPerPixel;
 
-		m_Center = point3(0, 0, 0);
+		m_Center = m_LookFrom;
 
 		// Determine viewport dimensions.
-		double focal_len = 1.0;
-		double viewport_height = 2.0;
+		double focal_len = (m_LookFrom - m_LookAt).length();
+		auto theta = deg_to_rad(m_vFov);
+		auto h = std::tan(theta/2);
+		auto viewport_height = 2 * h * focal_len;
 		double viewport_width = viewport_height * (double(m_ImageWidth) / m_ImageHeight);
+
+		// Calc Basis vectors
+		w = unit_vector(m_LookFrom - m_LookAt);
+		u = unit_vector(cross(m_ViewUp, w));
+		v = cross(w, u);
 	
 		// Viewport Vectors
-		vec3 viewport_x = vec3(viewport_width, 0, 0);
-		vec3 viewport_y = vec3(0, -viewport_height, 0);
+		vec3 viewport_x = viewport_width * u;
+		vec3 viewport_y = viewport_height * -v;
 
 		m_PixelDeltaU = viewport_x / m_ImageWidth;
 		m_PixelDeltaV = viewport_y / m_ImageHeight;
 
 		// Calculate the location of the upper left pixel.
-		auto viewport_upper_left =
-		    m_Center - vec3(0, 0, focal_len) - viewport_x/2 - viewport_y/2;
+		auto viewport_upper_left = m_Center - (focal_len * w) - viewport_x/2 - viewport_y/2;
 		m_Pixel00Loc = viewport_upper_left + 0.5 * (m_PixelDeltaU + m_PixelDeltaV);
 	}
 
