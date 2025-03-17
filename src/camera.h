@@ -16,6 +16,9 @@ public:
 	point3 m_LookAt   = point3(0,0,-1);  // Point camera is looking at
 	vec3   m_ViewUp   = vec3(0,1,0);
 
+	double m_DefocusAngle = 0;
+	double m_FocusDist    = 10;
+
 	void Render(const Hittable& world) {
 		Initialize();
 		std::cout << "P3\n" << m_ImageWidth << ' ' << m_ImageHeight << "\n255\n";
@@ -46,6 +49,7 @@ private:
 	vec3   m_PixelDeltaU;  // Offset to pixel to the right
 	vec3   m_PixelDeltaV;  // Offset to pixel below
 	vec3   u, v, w;
+	vec3   m_DefocusDiskX, m_DefocusDiskY;
 
 	void Initialize() {
 		m_ImageHeight = std::max(1, int(m_ImageWidth / m_AspectRatio));
@@ -55,10 +59,10 @@ private:
 		m_Center = m_LookFrom;
 
 		// Determine viewport dimensions.
-		double focal_len = (m_LookFrom - m_LookAt).length();
+		// double focal_len = (m_LookFrom - m_LookAt).length();
 		auto theta = deg_to_rad(m_vFov);
 		auto h = std::tan(theta/2);
-		auto viewport_height = 2 * h * focal_len;
+		auto viewport_height = 2 * h * m_FocusDist;
 		double viewport_width = viewport_height * (double(m_ImageWidth) / m_ImageHeight);
 
 		// Calc Basis vectors
@@ -74,14 +78,18 @@ private:
 		m_PixelDeltaV = viewport_y / m_ImageHeight;
 
 		// Calculate the location of the upper left pixel.
-		auto viewport_upper_left = m_Center - (focal_len * w) - viewport_x/2 - viewport_y/2;
+		auto viewport_upper_left = m_Center - (m_FocusDist * w) - viewport_x/2 - viewport_y/2;
 		m_Pixel00Loc = viewport_upper_left + 0.5 * (m_PixelDeltaU + m_PixelDeltaV);
+
+		double defocus_radius = m_FocusDist * std::tan(deg_to_rad(m_DefocusAngle / 2));
+		m_DefocusDiskX = u * defocus_radius;
+		m_DefocusDiskY = v * defocus_radius;
 	}
 
 	Ray get_ray(int col, int row) const {
 		vec3 offset = sample_square();
 		point3 sample_pixel = m_Pixel00Loc + (col+offset.x()) * m_PixelDeltaU + (row+offset.y()) * m_PixelDeltaV;
-		point3 ray_origin = m_Center;
+		point3 ray_origin = (m_DefocusAngle <= 0) ? m_Center : defocus_disk_sample();;
 		vec3 ray_dir = sample_pixel - ray_origin;
 		return Ray(ray_origin, ray_dir);
 	}
@@ -89,6 +97,11 @@ private:
 	vec3 sample_square() const {
     // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
 		return vec3(random_double() - 0.5, random_double() - 0.5, 0);
+	}
+
+	point3 defocus_disk_sample() const {
+		auto p = random_in_unit_disk();
+		return m_Center + (p[0] * m_DefocusDiskX) + (p[1] * m_DefocusDiskY);
 	}
 
 	color RayColor(const Ray& r, int Depth, const Hittable& world) {

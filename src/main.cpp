@@ -39,10 +39,14 @@ int main() {
     cam.m_SamplesPerPixel = 100;
     cam.m_MaxDepth = 50;
 
-    cam.m_vFov     = 90;
+    cam.m_vFov     = 20;
     cam.m_LookFrom = point3(-2,2,1);
     cam.m_LookAt   = point3(0,0,-1);
     cam.m_ViewUp   = vec3(0,1,0);
+
+    cam.m_DefocusAngle = 10.0;
+    cam.m_FocusDist    = 3.4;
+
     cam.Render(world);
     return 0;
 }
