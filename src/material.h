@@ -59,8 +59,9 @@ public:
 		double cos_theta = std::fmin(dot(-unit_direction, rec.normal), 1.0);
 		double sin_theta = std::sqrt(1.0 - cos_theta*cos_theta);
 
+		bool cannot_refract = refraction_ratio * sin_theta > 1.0 || reflectance(cos_theta, refraction_ratio) > random_double();
 		vec3 direction;
-		if (refraction_ratio * sin_theta > 1.0) {
+		if (cannot_refract) {
 			direction = reflect(r_in.direction(), rec.normal);
 		} else {
 			direction = refract(unit_direction, rec.normal, refraction_ratio);
@@ -72,4 +73,11 @@ public:
 
 private:
 	double m_RefractionIdx;
+
+	static double reflectance(double cosine, double refraction_idx) {
+		// Use Schlick's approximation for reflectance.
+		auto r0 = (1 - refraction_idx) / (1 + refraction_idx);
+		r0 *= r0;
+		return r0 + (1 - r0) * std::pow((1 - cosine), 5);
+	}
 };
