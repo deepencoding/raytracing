@@ -57,8 +57,8 @@ int main() {
     Camera cam;
     cam.m_AspectRatio = 16.0 / 9.0;
     cam.m_ImageWidth = 1200;
-    cam.m_SamplesPerPixel = 10;
-    cam.m_MaxDepth = 5;
+    cam.m_SamplesPerPixel = 25;
+    cam.m_MaxDepth = 10;
 
     cam.m_vFov     = 20;
     cam.m_LookFrom = point3(13,2,3);
