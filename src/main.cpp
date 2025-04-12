@@ -1,8 +1,9 @@
 #include "utility.h"
-#include "hittable_list.h"
-#include "sphere.h"
+#include "bvh.h"
 #include "camera.h"
+#include "hittable_list.h"
 #include "material.h"
+#include "sphere.h"
 #include <memory>
 
 using std::shared_ptr;
@@ -54,6 +55,8 @@ int main() {
 
     auto material3 = make_shared<Metal>(color(0.7, 0.6, 0.5), 0.0);
     world.add(make_shared<Sphere>(point3(4, 1, 0), 1.0, material3));
+
+    world = Hittable_list(make_shared<BVHNode>(world));
 
     Camera cam;
     cam.m_AspectRatio = 16.0 / 9.0;
