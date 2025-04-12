@@ -1,6 +1,7 @@
 #pragma once
 
 #include "hittable.h"
+#include "utility.h"
 #include "vec3.h"
 #include "material.h"
 
@@ -91,7 +92,8 @@ private:
 		point3 sample_pixel = m_Pixel00Loc + (col+offset.x()) * m_PixelDeltaU + (row+offset.y()) * m_PixelDeltaV;
 		point3 ray_origin = (m_DefocusAngle <= 0) ? m_Center : defocus_disk_sample();;
 		vec3 ray_dir = sample_pixel - ray_origin;
-		return Ray(ray_origin, ray_dir);
+		double ray_time = random_double();
+		return Ray(ray_origin, ray_dir, ray_time);
 	}
 
 	vec3 sample_square() const {

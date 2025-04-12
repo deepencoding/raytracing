@@ -2,6 +2,7 @@
 
 #include "interval.h"
 #include "utility.h"
+#include "aabb.h"
 
 class Material;
 
@@ -23,6 +24,6 @@ struct hit_record {
 class Hittable {
 public:
   virtual ~Hittable() = default;
-  virtual bool hit(const Ray &r, Interval ray_interval,
-                   hit_record &rec) const = 0;
+  virtual bool hit(const Ray &r, Interval ray_interval, hit_record &rec) const = 0;
+  virtual AABB bounding_box() const = 0;
 };

@@ -13,7 +13,10 @@ public:
 	Hittable_list(shared_ptr<Hittable> object) { add(object); }
 
 	void clear() { m_Objects.clear(); }
-	void add(shared_ptr<Hittable> object) { m_Objects.push_back(object); }
+	void add(shared_ptr<Hittable> object) {
+		m_Objects.push_back(object);
+		m_BoundingBox = AABB(m_BoundingBox, object->bounding_box());
+	}
 
 	bool hit(const Ray& r, Interval ray_t, hit_record& rec) const override {
 		hit_record temp_rec;
@@ -28,4 +31,9 @@ public:
 		}
 		return hit_anything;
 	}
+
+	AABB bounding_box() const override { return m_BoundingBox; }
+
+private:
+	AABB m_BoundingBox;
 };
