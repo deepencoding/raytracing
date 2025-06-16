@@ -21,6 +21,7 @@ A Monte Carlo path tracer built in C++ featuring adaptive BVH (Bounding Volume H
 
 ## 🧠 Architecture & Rendering Flow
 
+```
 Camera → Generate primary rays (with aperture & focus)
 ↓
 Traverse BVH (AABB-based) → TracePath(ray, depth)
@@ -28,6 +29,7 @@ Traverse BVH (AABB-based) → TracePath(ray, depth)
 ├─ Spawn secondary rays up to MaxDepth
 └─ Accumulate contributions (emitted + reflected)
 Multithreaded per-scanline/pixel batches → Output ppm image
+```
 
 - **Camera** simulates depth-of-field using thin-lens model and random sample disks.
 - **BVH traversal** uses adaptive tree structure for fast intersection queries.
